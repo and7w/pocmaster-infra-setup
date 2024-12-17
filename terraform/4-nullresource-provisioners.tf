@@ -7,7 +7,7 @@ resource "null_resource" "name" {
     host     = aws_eip.poc-master_eip.public_ip
     user     = "ec2-user"
     password = ""
-    private_key = file("private-key/key-terraform.pem")
+    private_key = file("~/.ssh/key-terraform.pem")
   }
 
 }

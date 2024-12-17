@@ -1,11 +1,11 @@
 # Get Latest AWS AMI ID for Debian
-data "aws_ami" "debian" {
+data "aws_ami" "awslinux" {
   most_recent = true
-  owners = [ "136693071363" ] # ID du propriétaire officiel de l'AMI Debian
+  owners = [ "amazon" ]
 
   filter {
     name = "name"
-    values = [ "debian*" ]
+    values = [ "al2023-ami-*" ]
   }
 
   filter {

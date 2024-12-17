@@ -1,0 +1,42 @@
+---
+- name: Installer Java 8 Temurin avec SDKMAN
+  hosts: all
+  become: yes
+  tasks:
+    - name: Installer les dépendances nécessaires
+      apt:
+        name:
+          - curl
+          - unzip
+          - zip
+        state: present
+        update_cache: yes
+
+
+    
+
+    - name: Charger SDKMAN pour le shell
+      lineinfile:
+        path: /root/.bashrc
+        line: 'source /root/.sdkman/bin/sdkman-init.sh'
+        state: present
+
+    - name: Installer Java 8 Temurin avec SDKMAN
+      shell: |
+        source /root/.sdkman/bin/sdkman-init.sh
+        sdk install java 8.0.372-tem
+      args:
+        executable: /bin/bash
+
+    - name: Configurer JAVA_HOME pour Java 8 Temurin
+      lineinfile:
+        path: /etc/environment
+        line: 'JAVA_HOME=/root/.sdkman/candidates/java/current'
+        state: present
+
+    - name: Vérifier la version de Java installée
+      shell: |
+        source /root/.sdkman/bin/sdkman-init.sh
+        java -version
+      args:
+        executable: /bin/bash

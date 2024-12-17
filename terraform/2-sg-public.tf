@@ -18,6 +18,13 @@ module "public_sg" {
       protocol    = "tcp"
     },
     {
+      from_port   = 8081
+      to_port     = 8081
+      cidr_blocks = "0.0.0.0/0"
+      description = "Allow HTTP traffic on port 8080"
+      protocol    = "tcp"
+    },
+    {
       from_port   = 3000
       to_port     = 3000
       cidr_blocks = "0.0.0.0/0"

@@ -1,0 +1,6 @@
+---
+- name: Installer Nexus via un rôle
+  hosts: nexus_server
+  become: yes
+  roles:
+    - nexus-3

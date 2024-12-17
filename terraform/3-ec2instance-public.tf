@@ -3,7 +3,7 @@ module "ec2_public" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "5.6.0"
   name                   = "${var.business_divsion}-Host"
-  ami                    = data.aws_ami.amzlinux2.id
+  ami                    = data.aws_ami.awslinux.id
   instance_type          = var.instance_type
   key_name               = var.instance_keypair
   monitoring             = false
