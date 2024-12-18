@@ -11,10 +11,19 @@ variable "environment" {
   type = string
   default = "dev"
 }
-
 # Business Division
 variable "business_divsion" {
-  description = "Business Division in the large organization this Infrastructure belongs"
+  description = "Business Division"
   type = string
   default = "poc-master"
 }
+
+# KeyPair File
+variable "keypair_file_path" {
+  description = "SSH Key Pair file path"
+  type = string
+  default = "~/.ssh/key-terraform.pem"
+}
+
+
+

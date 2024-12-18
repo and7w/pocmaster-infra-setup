@@ -1,23 +1,19 @@
-# Get Latest AWS AMI ID for Debian
-data "aws_ami" "debian" {
+# Get latest AMI ID for Amazon Linux2 OS
+data "aws_ami" "amzlinux2" {
   most_recent = true
-  owners = [ "136693071363" ] # ID du propriétaire officiel de l'AMI Debian
-
+  owners = [ "amazon" ]
   filter {
     name = "name"
-    values = [ "debian*" ]
+    values = [ "amzn2-ami-hvm-*-gp2" ]
   }
-
   filter {
     name = "root-device-type"
     values = [ "ebs" ]
   }
-
   filter {
     name = "virtualization-type"
     values = [ "hvm" ]
   }
-
   filter {
     name = "architecture"
     values = [ "x86_64" ]
