@@ -9,10 +9,10 @@ module "ec2_public" {
   key_name               = var.instance_keypair
   #monitoring             = true
   subnet_id              = module.vpc.public_subnets[0]
+  user_data = file("${path.module}/01-app1-install.sh")
   tags = local.common_tags
 
   # UPDATED
-  #vpc_security_group_ids = [module.public_bastion_sg.this_security_group_id]
   vpc_security_group_ids = [module.public_pocmaster_sg.security_group_id]
 }
 

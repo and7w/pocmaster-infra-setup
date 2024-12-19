@@ -2,6 +2,7 @@
 **/.terraform/*
 #Private file
 **/private-key/*
+**/draft-*/*
 *key-terraform.pem
 # .tfstate files
 *.tfstate
