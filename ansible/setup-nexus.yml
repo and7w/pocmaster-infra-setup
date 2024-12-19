@@ -3,4 +3,4 @@
   hosts: nexus_server
   become: yes
   roles:
-    - nexus-3
+    - nexus
