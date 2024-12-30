@@ -1,0 +1,12 @@
+[Unit]
+Description=HashiCorp Vault Dev Server
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/vault server -dev -dev-root-token-id=root -dev-tls
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

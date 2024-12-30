@@ -79,9 +79,10 @@
     line: '{{nexus_os_user}} ALL=(ALL) NOPASSWD:ALL'
     state: present
     create: yes
-
   tags:
     - service
+
+
 - name: "Configurer le fichier de service Nexus"
   ansible.builtin.template:
     src: nexus.service.j2
@@ -90,6 +91,5 @@
   - "reload systemd"
   - "enable nexus"
   - "restart nexus"
-
   tags:
     - service

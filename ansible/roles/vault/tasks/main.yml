@@ -1,0 +1,33 @@
+---
+# tasks file for vault
+- name: "Install necessary dependencies"
+  ansible.builtin.yum:
+    name:
+      - yum-utils
+      - shadow-utils
+    state: present
+
+- name: "Add HashiCorp repository"
+  ansible.builtin.command: yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+  args:
+    creates: /etc/yum.repos.d/hashicorp.repo
+
+- name: "Install Vault"
+  ansible.builtin.yum:
+    name: vault
+    state: present
+  register: vault_install_result
+
+- name: "Create systemd file to start Vault with UI"
+  ansible.builtin.template:
+    src: vault.service.j2
+    dest: /etc/systemd/system/vault.service
+  when: vault_install_result is succeeded
+  notify:
+    - "reload systemd"
+    - "enable vault"
+    - "restart vault"
+
+
+
+

@@ -6,7 +6,6 @@
     name: nexus
     state: started
 
-
 - name: "restart nexus"
   service:
     name: nexus
@@ -21,4 +20,3 @@
     name: nexus.service
     enabled: yes
     state: started
-
