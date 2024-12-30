@@ -1,0 +1,33 @@
+---
+- name: "Install java"
+  hosts: all
+  become: yes
+  vars:
+    java_package: "java-17-amazon-corretto-devel.x86_64"
+
+  tasks:
+    - name: "Update all packages"
+      ansible.builtin.yum:
+        name: "*"
+        state: latest
+
+    - name: Install wget
+      ansible.builtin.yum:
+        name: wget
+        state: present
+
+    - name: "Install Java"
+      ansible.builtin.yum:
+        name: "{{ java_package }}"
+        state: present
+
+    - name: "Verify Java installation"
+      ansible.builtin.command: java -version
+      register: java_version
+      ignore_errors: yes
+
+    - name: "Debug Java version"
+      ansible.builtin.debug:
+        msg: "{{ java_version.stdout }}"
+      tags:
+        - debug

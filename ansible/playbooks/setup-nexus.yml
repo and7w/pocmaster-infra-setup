@@ -1,0 +1,6 @@
+---
+- name: "Install Nexus with a role"
+  hosts: pocmaster_server
+  become: yes
+  roles:
+    - nexus

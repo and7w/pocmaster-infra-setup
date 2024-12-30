@@ -2,16 +2,23 @@
 # handlers file for nexus
 
 - name: "start nexus"
-  become: true
-  service: name=nexus state=started
-  tags:
-    - init
+  service:
+    name: nexus
+    state: started
+
 
 - name: "restart nexus"
-  become: true
-  service: name=nexus state=restarted
+  service:
+    name: nexus
+    state: restarted
 
 - name: "reload systemd"
-  become: true
   systemd:
     daemon_reload: yes
+
+- name: "enable nexus"
+  systemd:
+    name: nexus.service
+    enabled: yes
+    state: started
+

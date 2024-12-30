@@ -5,11 +5,11 @@ After=network.target
 [Service]
 Type=forking
 LimitNOFILE=65536
-User=nexus
-Group=nexus
-ExecStart={{ nexus_installation_dir }}/nexus-{{ nexus_version }}/bin/nexus start
-ExecStop={{ nexus_installation_dir }}/nexus-{{ nexus_version }}/bin/nexus stop
+User={{ nexus_os_user }}
+ExecStart={{ nexus_installation_dir }}/nexus/bin/nexus start
+ExecStop={{ nexus_installation_dir }}/nexus/bin/nexus stop
 Restart=on-abort
+TimeoutSec=600
 
 [Install]
 WantedBy=multi-user.target
