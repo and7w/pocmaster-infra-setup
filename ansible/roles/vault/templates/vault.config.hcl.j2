@@ -1,0 +1,19 @@
+#Vault Configuration file
+
+listener "tcp" {
+  address     = "{{ vault_server_ip_addr }}:{{ vault_server_port }}"
+  tls_disable = "{{ tls_disable }}"
+}
+
+# Activate ui
+ui = true
+
+# Storage data
+storage "file" {
+  path = "{{ vault_storage_file }}"
+}
+
+# define a backend secret path
+secret "kv" {
+  path = "pocmaster2"
+}

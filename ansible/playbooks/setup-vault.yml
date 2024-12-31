@@ -1,19 +1,6 @@
-- name: Setup Vault
-  hosts: servers
-  tasks:
-    - name: Install dependencies
-      apt:
-        name: unzip
-        state: present
-    - name: Download Vault
-      get_url:
-        url: https://releases.hashicorp.com/vault/1.12.0/vault_1.12.0_linux_amd64.zip
-        dest: /tmp/vault.zip
-    - name: Unzip Vault
-      unarchive:
-        src: /tmp/vault.zip
-        dest: /usr/local/bin/
-        remote_src: yes
-    - name: Start Vault
-      shell: |
-        vault server -dev -dev-root-token-id=root &
+---
+- name: "Install Vault with a role"
+  hosts: pocmaster_server
+  become: yes
+  roles:
+    - vault

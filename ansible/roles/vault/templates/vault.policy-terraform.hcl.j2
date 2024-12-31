@@ -1,0 +1,16 @@
+path "*" {
+  capabilities = ["list", "read"]
+}
+
+path "secrets/data/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+path "kv/data/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+
+path "auth/token/create" {
+  capabilities = ["create", "read", "update", "list"]
+}

@@ -1,2 +1,5 @@
 ---
 # defaults file for vault
+vault_os_user: vault
+vault_os_user_shell: "/bin/false"
+vault_home_dir: "/opt/vault"

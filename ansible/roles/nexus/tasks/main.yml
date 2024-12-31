@@ -36,7 +36,6 @@
     name: "{{ nexus_os_user }}"
     shell: "{{ nexus_os_user_shell }}"
     state: present
-  when: nexus_create_os_user
   tags:
     - download
     - install

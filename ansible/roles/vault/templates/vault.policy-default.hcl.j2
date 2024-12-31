@@ -1,0 +1,22 @@
+# Autorise la création de tokens
+  path "auth/token/create" {
+    capabilities = ["create", "update"]
+}
+
+  # Autorise la lecture des informations des tokens créés
+    path "auth/token/lookup-self" {
+    capabilities = ["read"]
+}
+
+  # Autorise la destruction des tokens
+    path "auth/token/revoke-self" {
+    capabilities = ["update"]
+}
+
+path "secret/data/*" {
+  capabilities = ["read", "list"]
+}
+
+  path "sys/health" {
+  capabilities = ["read"]
+}
