@@ -26,7 +26,14 @@ module "public_pocmaster_sg" {
       from_port   = 8081
       to_port     = 8081
       protocol    = 6
-      description = "Allow Port 80 from internet"
+      description = "Nexus port"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      from_port   = 8200
+      to_port     = 8200
+      protocol    = 6
+      description = "Vault Port"
       cidr_blocks = "0.0.0.0/0"
     }
   ]
