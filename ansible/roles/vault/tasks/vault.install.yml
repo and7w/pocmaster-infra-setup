@@ -36,6 +36,7 @@
     - { src: "vault.config.hcl.j2", dest: "/opt/vault/vault-config.hcl" }
     - { src: "vault.policy-default.hcl.j2", dest: "/opt/vault/vault.policy-default.hcl" }
     - { src: "vault.policy-terraform.hcl.j2", dest: "/opt/vault/vault.policy-terraform.hcl" }
+    - { src: "vault.env.sh.j2", dest: "/etc/profile.d/vault.env.sh" }
   tags:
     - config
 
@@ -69,12 +70,3 @@
     - "reload systemd"
     - "enable vault"
     - "restart vault"
-
-
-
-- name: "Ajouter la variable VAULT_ADDR à .bashrc"
-  lineinfile:
-    path: "{{ ansible_env.HOME }}/.bashrc"
-    line: 'export VAULT_ADDR={{ vault_url }}'
-    create: yes
-    state: present

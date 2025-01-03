@@ -1,0 +1,144 @@
+---
+- name: "Automate Vault Setup"
+  hosts: pocmaster_server
+  become: yes
+  vars:
+    vault_addr: "http://{{ hostvars[inventory_hostname]['server_internal_ip'] }}:8200"
+  tasks:
+    - name: "Source environment variable"
+      ansible.builtin.shell: |
+        source /etc/profile
+      args:
+        executable: /bin/bash
+      tags:
+        - setup
+        - init
+
+    - name: "Initialize Vault"
+      ansible.builtin.command: vault operator init -format=json
+      register: init_output
+      ignore_errors: no
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+      tags:
+        - setup
+
+    - name: "Save initialization keys to file"
+      ansible.builtin.copy:
+        content: "{{ init_output.stdout }}"
+        dest: /tmp/vault_init.json
+      tags:
+        - setup
+
+    - name: "Unseal Vault"
+      ansible.builtin.command: vault operator unseal {{ item }}
+      with_items: "{{ init_output.stdout | from_json | json_query('unseal_keys_b64') }}"
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+      tags:
+        - setup
+
+    - name: "Login with root token"
+      ansible.builtin.command: vault login {{ init_output.stdout | from_json | json_query('root_token') }}
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+      tags:
+        - setup
+
+    - name: "Enable AppRole authentication"
+      ansible.builtin.command: vault auth enable approle
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+      tags:
+        - setup
+
+    - name: "Write Terraform policy"
+      ansible.builtin.command: vault policy write {{ terraform_policy_name }} {{ terraform_policy_path }}
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+      vars:
+        terraform_policy_name: "terraform"
+        terraform_policy_path: "/opt/vault/vault.policy-terraform.hcl"
+      tags:
+        - setup
+
+    - name: "Configure AppRole for Terraform"
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+      ansible.builtin.command: >
+        vault write auth/approle/role/{{ terraform_role_name }}
+        secret_id_ttl=200m
+        token_num_uses=100
+        token_ttl=200m
+        token_max_ttl=200m
+        secret_id_num_uses=40
+        token_policies={{ terraform_policy_name }}
+      vars:
+        terraform_role_name: "terraform"
+        terraform_policy_name: "terraform"
+      tags:
+        - setup
+
+    - name: "Retrieve Role ID"
+      ansible.builtin.command: vault read -format=json auth/approle/role/{{ terraform_role_name }}/role-id
+      register: role_id_output
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+      vars:
+        terraform_role_name: "terraform"
+      tags:
+        - setup
+        - update-token
+
+    - name: "Save Role ID to file"
+      ansible.builtin.copy:
+        content: "Role ID: {{ role_id_output.stdout | from_json | json_query('data.role_id') }}"
+        dest: /tmp/vault_secret_output.txt
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+      tags:
+        - setup
+        - update-token
+
+    - name: "Generate Secret ID"
+      ansible.builtin.command: vault write -f -format=json auth/approle/role/{{ terraform_role_name }}/secret-id
+      register: secret_id_output
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+      vars:
+        terraform_role_name: "terraform"
+      tags:
+        - setup
+        - update-token
+
+    - name: "Save Secret ID to file"
+      ansible.builtin.copy:
+        content: "Secret ID: {{ secret_id_output.stdout | from_json | json_query('data.secret_id') }}"
+        dest: /tmp/vault_roleid_output.txt
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+      tags:
+        - setup
+        - update-token
+
+    - name: "Login with Role ID and Secret ID"
+      ansible.builtin.command: >
+        vault write auth/approle/login
+        role_id="{{ role_id_output.stdout | from_json | json_query('data.role_id') }}"
+        secret_id="{{ secret_id_output.stdout | from_json | json_query('data.secret_id') }}"
+      register: login_output
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+      tags:
+        - setup
+        - update-token
+
+    - name: "Save login output to file"
+      ansible.builtin.copy:
+        content: "Login Output: {{ login_output.stdout }}"
+        dest: /tmp/vault_approle_login_output.txt
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+      tags:
+        - setup
+        - update-token

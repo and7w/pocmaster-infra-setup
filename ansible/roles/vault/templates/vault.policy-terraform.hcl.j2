@@ -1,16 +1,42 @@
-path "*" {
-  capabilities = ["list", "read"]
-}
-
-path "secrets/data/*" {
+# Accès global aux chemins
+path "pocmaster/*" {
   capabilities = ["create", "read", "update", "delete", "list"]
 }
 
-path "kv/data/*" {
+# Accès complet au moteur KV pour lire, créer, mettre à jour, supprimer et lister les secrets
+path "pocmaster/data/*" {
   capabilities = ["create", "read", "update", "delete", "list"]
 }
 
+# Pour récupérer les versions des secrets dans KV v2
+path "pocmaster/metadata/*" {
+  capabilities = ["read", "list"]
+}
 
+# Permet de gérer les métadonnées des secrets (par exemple, la suppression ou la gestion des versions)
+path "pocmaster/metadata/*" {
+  capabilities = ["create", "update", "delete", "list"]
+}
+
+# Accès pour monter des moteurs de secrets ou mettre à jour leur configuration
+path "sys/mounts/*" {
+  capabilities = ["create", "update", "read", "delete", "list"]
+}
+
+# Gestion des politiques
+path "sys/policies/acl/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Permet de créer des tokens enfants
 path "auth/token/create" {
-  capabilities = ["create", "read", "update", "list"]
+  capabilities = ["create", "update"]
+}
+
+path "auth/token/lookup-self" {
+  capabilities = ["read"]
+}
+
+path "auth/token/revoke-self" {
+  capabilities = ["update"]
 }

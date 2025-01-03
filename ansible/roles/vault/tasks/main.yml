@@ -3,8 +3,3 @@
   include_tasks: vault.install.yml
   tags:
     - install
-
-#- name: "Vault config user"
-  #include_tasks: vault.user.config.yml
-  #tags:
-  #  - config
