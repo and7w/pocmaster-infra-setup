@@ -13,6 +13,12 @@ output "ec2_pocmaster_public_ip" {
   value       = module.ec2_public.public_ip 
 }
 
+## ec2_pocmaster_private_ip
+output "ec2_pocmaster_private_ip" {
+  description = "Private IP address EC2 instance"
+  value       = module.ec2_public.private_ip
+}
+
 /*# Private EC2 Instances - App1
 ## ec2_private_instance_ids
 output "ec2_private_instance_ids_app1" {
