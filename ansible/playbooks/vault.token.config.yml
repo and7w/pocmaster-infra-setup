@@ -93,7 +93,7 @@
     - name: "Save Role ID to file"
       ansible.builtin.copy:
         content: "Role ID: {{ role_id_output.stdout | from_json | json_query('data.role_id') }}"
-        dest: /tmp/vault_secret_output.txt
+        dest: /tmp/vault_role_output.txt
       environment:
         VAULT_ADDR: "{{ vault_addr }}"
       tags:
@@ -114,7 +114,7 @@
     - name: "Save Secret ID to file"
       ansible.builtin.copy:
         content: "Secret ID: {{ secret_id_output.stdout | from_json | json_query('data.secret_id') }}"
-        dest: /tmp/vault_roleid_output.txt
+        dest: /tmp/vault_secret_output.txt
       environment:
         VAULT_ADDR: "{{ vault_addr }}"
       tags:
@@ -135,7 +135,7 @@
 
     - name: "Save login output to file"
       ansible.builtin.copy:
-        content: "Login Output: {{ login_output.stdout }}"
+        content: "Token: {{ login_output.stdout }}"
         dest: /tmp/vault_approle_login_output.txt
       environment:
         VAULT_ADDR: "{{ vault_addr }}"
