@@ -1,0 +1,5 @@
+---
+- name: "Include vault install file"
+  include_tasks: vault.install.yml
+  tags:
+    - install

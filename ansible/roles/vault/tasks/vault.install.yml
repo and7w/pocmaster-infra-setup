@@ -1,0 +1,72 @@
+---
+# tasks file for vault
+- name: "Install necessary dependencies"
+  ansible.builtin.yum:
+    name:
+      - yum-utils
+      - shadow-utils
+    state: present
+
+- name: "Add HashiCorp repository"
+  ansible.builtin.command: yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+  args:
+    creates: /etc/yum.repos.d/hashicorp.repo
+
+- name: "Install Vault"
+  ansible.builtin.yum:
+    name: vault
+    state: present
+  #register: vault_install_result
+
+- name: "Ensure Vault o/s user exists"
+  ansible.builtin.user:
+    name: "{{ vault_os_user }}"
+    shell: "{{ vault_os_user_shell }}"
+    home: "{{ vault_home_dir }}"
+    create_home: yes
+    system: yes
+    state: present
+
+
+- name: "Create Vault Configuration files"
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - { src: "vault.config.hcl.j2", dest: "/opt/vault/vault-config.hcl" }
+    - { src: "vault.policy-default.hcl.j2", dest: "/opt/vault/vault.policy-default.hcl" }
+    - { src: "vault.policy-terraform.hcl.j2", dest: "/opt/vault/vault.policy-terraform.hcl" }
+    - { src: "vault.env.sh.j2", dest: "/etc/profile.d/vault.env.sh" }
+  tags:
+    - config
+
+
+- name: "Ensure vault has passwordless sudo"
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers.d/vault
+    line: '{{vault_os_user}} ALL=(ALL) NOPASSWD:ALL'
+    state: present
+    create: yes
+
+- name: "Set ownership to vault:vault for /opt/vault"
+  ansible.builtin.file:
+    path: "{{ vault_home_dir }}"
+    owner: "{{ vault_os_user }}"
+    group: "{{ vault_os_user }}"
+    mode: "0755"
+    recurse: yes
+
+#- name: "Enable policy"
+#  ansible.builtin.command:
+#    cmd: "vault policy write create-token /opt/vault/vault.policy-default.hcl"
+
+
+- name: "Create systemd file to start Vault with UI"
+  ansible.builtin.template:
+    src: vault.service.j2
+    dest: /etc/systemd/system/vault.service
+  #when: vault_install_result is succeeded
+  notify:
+    - "reload systemd"
+    - "enable vault"
+    - "restart vault"

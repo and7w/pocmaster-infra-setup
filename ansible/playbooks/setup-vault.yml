@@ -1,0 +1,6 @@
+---
+- name: "Install Vault with a role"
+  hosts: pocmaster_server
+  become: yes
+  roles:
+    - vault

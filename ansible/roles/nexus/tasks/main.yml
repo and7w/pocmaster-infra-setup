@@ -1,0 +1,94 @@
+---
+# tasks file for nexus
+
+- name: "Download nexus_package"
+  "ansible.builtin.get_url":
+    url: "https://download.sonatype.com/nexus/3/{{ nexus_package }}"
+    dest: "{{ nexus_download_file }}"
+  tags:
+    - download
+
+- name: "Ensure nexus installation dir exist"
+  "ansible.builtin.file":
+    path: "{{ nexus_installation_dir }}"
+    state: directory
+  tags:
+    - download
+
+
+- name: "Unpack Nexus download"
+  ansible.builtin.unarchive:
+    src: "{{ nexus_download_file }}"
+    dest: "{{ nexus_installation_dir }}"
+    remote_src: yes
+  tags:
+    - download
+
+- name: "Rename nexus binary file to nexus"
+  ansible.builtin.command:
+    cmd: mv {{ nexus_installation_dir }}/nexus-{{ nexus_version }} {{ nexus_installation_dir }}/nexus
+  tags:
+    - download
+    - install
+
+- name: "Ensure Nexus o/s user exists"
+  ansible.builtin.user:
+    name: "{{ nexus_os_user }}"
+    shell: "{{ nexus_os_user_shell }}"
+    state: present
+  tags:
+    - download
+    - install
+
+
+- name: "Set ownership to nexus:nexus for /opt/nexus-3"
+  ansible.builtin.file:
+    path: "{{ nexus_installation_dir }}"
+    owner: "{{ nexus_os_user }}"
+    group: "{{ nexus_os_user }}"
+    mode: "0755"
+    recurse: yes
+  tags:
+    - download
+    - install
+
+#nexus service
+- name: "Configure port in nexus.properties"
+  ansible.builtin.lineinfile:
+    dest: "{{ nexus_installation_dir }}/nexus/etc/nexus-default.properties"
+    line: "application-port={{ nexus_port }}"
+    regexp: "application-port=.*"
+    state: present
+
+  tags:
+    - service
+
+- name: "Replace commented line with new value"
+  ansible.builtin.replace:
+    path: "{{ nexus_installation_dir }}/nexus/bin/nexus.rc"
+    regexp: '^#run_as_user=""'
+    replace: 'run_as_user="{{nexus_os_user}}"'
+
+  tags:
+    - service
+
+- name: "Ensure nexus has passwordless sudo"
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers.d/nexus
+    line: '{{nexus_os_user}} ALL=(ALL) NOPASSWD:ALL'
+    state: present
+    create: yes
+  tags:
+    - service
+
+
+- name: "Configurer le fichier de service Nexus"
+  ansible.builtin.template:
+    src: nexus.service.j2
+    dest: /etc/systemd/system/nexus.service
+  notify:
+  - "reload systemd"
+  - "enable nexus"
+  - "restart nexus"
+  tags:
+    - service

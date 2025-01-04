@@ -1,0 +1,2 @@
+# Install a role from the Ansible Galaxy
+- src: integr8.ansible_role_sonatype_nexus

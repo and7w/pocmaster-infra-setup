@@ -1,0 +1,22 @@
+---
+# handlers file for vault
+
+- name: "start vault"
+  service:
+    name: vault
+    state: started
+
+- name: "restart vault"
+  service:
+    name: vault
+    state: restarted
+
+- name: "reload systemd"
+  systemd:
+    daemon_reload: yes
+
+- name: "enable vault"
+  systemd:
+    name: vault.service
+    enabled: yes
+    state: started

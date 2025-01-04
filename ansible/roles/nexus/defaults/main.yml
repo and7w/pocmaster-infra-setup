@@ -1,0 +1,11 @@
+---
+# defaults file for nexus
+nexus_major_version: '3'
+nexus_version: '3.75.1-01'
+nexus_package: 'nexus-{{ nexus_version }}-unix.tar.gz'
+nexus_download_dir: '/usr/share'
+nexus_download_file: '/usr/share/nexus.tar.gz'
+nexus_installation_dir: '/opt/nexus-{{ nexus_major_version }}'
+nexus_create_os_user: true
+nexus_os_user: 'nexus'
+nexus_os_user_shell: '/bin/bash'
